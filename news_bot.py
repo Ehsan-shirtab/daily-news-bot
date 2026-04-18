@@ -3,6 +3,7 @@ import requests
 import os
 from groq import Groq
 
+# The secret passwords we saved in GitHub Secrets
 TELEGRAM_TOKEN = os.environ["TELEGRAM_TOKEN"]
 CHAT_ID = os.environ["CHAT_ID"]
 GROQ_API_KEY = os.environ["GROQ_API_KEY"]
@@ -36,32 +37,34 @@ for link in links:
         if "iran" in article.title.lower() or "iran" in article.get('description', '').lower():
             news_text += f"Title: {article.title}\nDetails: {article.get('description', '')}\n---\n"
 
-# 2. The NEW Simple English Prompt
+# 2. Ask the AI with the "Goldilocks" Prompt (High Detail, Simple Words)
 client = Groq(api_key=GROQ_API_KEY)
 
-simple_prompt = f"""
-You are a friendly English teacher. 
+goldilocks_prompt = f"""
+You are a professional journalist writing for an intermediate English learner (CEFR B1/B2 level).
 Read this recent news data about 'Iran':
 {news_text}
 
-Write a clear and easy-to-understand summary of the current situation. 
-Your response MUST follow these strict rules:
-1. Use VERY SIMPLE English words (CEFR B1 level). Do not use difficult, formal, or academic words. Keep your sentences short.
-2. Tell me the main events in a simple way.
-3. Mention the specific names of leaders, organizations, or countries involved.
-4. Briefly explain how Western news (like USA) and Middle Eastern news are showing different sides of the story.
-5. Format the text with bullet points so it is easy to read.
+Write a detailed news report about TODAY'S specific events. 
+You MUST follow these strict rules:
 
-At the very end, pick 5 useful English words from your text and provide their exact Persian (Farsi) translation.
+1. HIGH DETAIL: Give EXACT details. You must include the specific names of people, exact quotes, numbers, and specific actions happening right now. Do NOT give vague generalities or past history.
+2. SIMPLE ENGLISH: Keep the English easy to read. Use short sentences. Do NOT use complex academic or formal words. Use standard, everyday intermediate vocabulary.
+3. CONTRAST: Briefly explain how Western news and Middle Eastern news are reporting these exact events differently today.
+4. FORMAT: Format the text with clear bold headings and bullet points.
+
+At the very end, pick 5 useful English vocabulary words from your text. Provide their EXACT and NATURAL Persian (Farsi) translation. Use standard Farsi dictionary equivalents, not robotic word-by-word translations.
 """
 
 chat = client.chat.completions.create(
     model="llama-3.1-8b-instant",
-    messages=[{"role": "user", "content": simple_prompt}]
+    messages=[{"role": "user", "content": goldilocks_prompt}]
 )
 summary = chat.choices[0].message.content
 
-# 3. Send to Telegram
+# 3. Send it to your phone!
 url = f"https://api.telegram.org/bot{TELEGRAM_TOKEN}/sendMessage"
 response = requests.post(url, data={"chat_id": CHAT_ID, "text": summary})
+
+# 4. Print the result so we can see if it worked in the GitHub logs
 print("Telegram says:", response.text)
