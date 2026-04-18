@@ -23,7 +23,7 @@ for link in links:
 # 2. Ask the AI to write a simple summary
 client = Groq(api_key=GROQ_API_KEY)
 chat = client.chat.completions.create(
-    model="llama3-8b-8192",
+    model="llama-3.1-8b-instant",
     messages=[{"role": "user", "content": f"You are an English teacher. Read these headlines: {news_text}. Write a short summary in simple intermediate English. Then, pick 3 English words you used and translate them to Farsi."}]
 )
 summary = chat.choices[0].message.content
