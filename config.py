@@ -1,24 +1,51 @@
 import os
-from dotenv import load_dotenv
 
-load_dotenv()  # loads .env for local dev
+TELEGRAM_TOKEN = os.environ["TELEGRAM_TOKEN"]
+CHAT_ID        = os.environ["CHAT_ID"]
+GROQ_API_KEY   = os.environ["GROQ_API_KEY"]
 
-TELEGRAM_TOKEN = os.environ.get("TELEGRAM_TOKEN")
-GROQ_API_KEY = os.environ.get("GROQ_API_KEY")
+MODEL = "llama-3.3-70b-versatile"   # upgraded — much smarter output
 
-if not TELEGRAM_TOKEN or not GROQ_API_KEY:
-    raise ValueError("Missing TELEGRAM_TOKEN or GROQ_API_KEY environment variables!")
+# ── RSS Sources ──────────────────────────────────────────────────────────────
+# Organised by region so we get genuinely balanced perspectives
+RSS_SOURCES = {
+    "🇺🇸 US Mainstream": [
+        "http://rss.cnn.com/rss/edition_world.rss",
+        "https://rss.nytimes.com/services/xml/rss/nyt/MiddleEast.xml",
+        "https://feeds.washingtonpost.com/rss/world",
+        "https://feeds.npr.org/1004/rss.xml",
+        "https://feeds.a.dj.com/rss/RSSWorldNews.xml",          # Wall Street Journal
+        "https://abcnews.go.com/abcnews/internationalheadlines",
+        "https://www.cbsnews.com/latest/rss/world",
+    ],
+    "🇺🇸 US Conservative": [
+        "http://feeds.foxnews.com/foxnews/world",
+        "https://feeds.feedburner.com/breitbart",
+    ],
+    "🇬🇧 British / European": [
+        "https://www.theguardian.com/world/rss",
+        "http://feeds.bbci.co.uk/news/world/middle_east/rss.xml",
+        "https://www.france24.com/en/rss",
+        "https://rss.dw.com/rdf/rss-en-world",                  # Deutsche Welle
+        "https://feeds.reuters.com/reuters/worldNews",
+    ],
+    "🌍 Middle East / Regional": [
+        "https://www.aljazeera.com/xml/rss/all.xml",
+        "https://english.alarabiya.net/tools/rss",               # Saudi perspective
+        "https://www.i24news.com/i24News-English.rss",          # Israeli perspective
+    ],
+    "🇮🇷 Iranian Media": [
+        "https://www.tehrantimes.com/rss",
+        "https://en.mehrnews.com/rss",
+        "https://ifpnews.com/feed",                              # Iran Front Page
+    ],
+}
 
-MODEL = "llama-3.3-70b-versatile"  # upgraded from 8b
+# Keywords to filter relevant articles
+KEYWORDS = [
+    "iran", "iranian", "tehran", "khamenei", "rouhani", "raisi",
+    "irgc", "nuclear", "sanctions", "strait of hormuz", "persian gulf"
+]
 
-SYSTEM_PROMPT = """
-You are Aria — a friendly, funny Canadian English tutor and friend. 
-Your student is an intermediate English learner whose native language is Farsi and who lives in Canada.
-
-STRICT RULES you must always follow:
-- NEVER sound like a robot, textbook, or formal AI.
-- Use SIMPLE everyday English at B1/B2 level — short sentences, common words.
-- Be warm, encouraging, and occasionally use light humour.
-- When correcting mistakes, be gentle — never make the student feel bad.
-- Always use emojis to make responses easy to read on a phone.
-"""
+MAX_ARTICLES_PER_SOURCE = 4   # articles per RSS feed
+MAX_TOTAL_ARTICLES      = 40  # hard cap before sending to AI
