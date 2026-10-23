@@ -4,7 +4,7 @@ TELEGRAM_TOKEN = os.environ["TELEGRAM_TOKEN"]
 CHAT_ID        = os.environ["CHAT_ID"]
 GROQ_API_KEY   = os.environ["GROQ_API_KEY"]
 
-MODEL = "llama-3.3-70b-versatile"   # upgraded — much smarter output
+MODEL = "openai/gpt-oss-120b"   # upgraded — much smarter output
 
 # ── RSS Sources ──────────────────────────────────────────────────────────────
 # Organised by region so we get genuinely balanced perspectives
