@@ -25,11 +25,11 @@ Write a professional news digest with EXACTLY this structure:
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━
 🌍 IRAN NEWS DIGEST
-📅 [Today's date]
+📅 [Today's date, written in this format: June 21, 2026]
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 🔴 TOP STORY
-[Write 3–4 sentences. Include: WHO did WHAT, WHERE, WHEN, and WHY it matters.
+[Write 3–4 sentences as ONE paragraph (not one sentence per line). Include: WHO did WHAT, WHERE, WHEN, and WHY it matters.
 Use exact names, numbers, and quotes if available.]
 
 📰 KEY DEVELOPMENTS TODAY
@@ -85,8 +85,9 @@ def summarize(news_text: str) -> str:
                 {"role": "system", "content": SYSTEM_PROMPT},
                 {"role": "user",   "content": prompt},
             ],
-            max_tokens=1800,
+            max_tokens=4000,
             temperature=0.4,    # lower = more factual, less creative
+            reasoning_effort="low",
         )
         return response.choices[0].message.content
 
